@@ -1,0 +1,105 @@
+import React, { useState } from "react";
+import "./App.css";
+
+function App() {
+  const [attendance, setAttendance] = useState([
+    { id: 1, name: "Arun", batch: "Batch A", status: "" },
+    { id: 2, name: "Priya", batch: "Batch A", status: "" },
+    { id: 3, name: "Karthik", batch: "Batch B", status: "" },
+    { id: 4, name: "Divya", batch: "Batch B", status: "" }
+  ]);
+
+  const [selectedBatch, setSelectedBatch] = useState("All");
+
+  const markAttendance = (id, status) => {
+    const updated = attendance.map((student) =>
+      student.id === id ? { ...student, status } : student
+    );
+    setAttendance(updated);
+  };
+
+  const filteredStudents =
+    selectedBatch === "All"
+      ? attendance
+      : attendance.filter(
+          (student) => student.batch === selectedBatch
+        );
+
+  const presentCount = attendance.filter(
+    (student) => student.status === "Present"
+  ).length;
+
+  const absentCount = attendance.filter(
+    (student) => student.status === "Absent"
+  ).length;
+
+  const percentage =
+    attendance.length > 0
+      ? ((presentCount / attendance.length) * 100).toFixed(2)
+      : 0;
+
+  return (
+    <div className="container">
+      <h1>Trainer Session Attendance Dashboard</h1>
+
+      <div className="dashboard">
+        <div>Total Students: {attendance.length}</div>
+        <div>Present: {presentCount}</div>
+        <div>Absent: {absentCount}</div>
+        <div>Attendance %: {percentage}%</div>
+      </div>
+
+      <div className="filter">
+        <label>Select Batch: </label>
+        <select
+          value={selectedBatch}
+          onChange={(e) => setSelectedBatch(e.target.value)}
+        >
+          <option value="All">All</option>
+          <option value="Batch A">Batch A</option>
+          <option value="Batch B">Batch B</option>
+        </select>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Batch</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {filteredStudents.map((student) => (
+            <tr key={student.id}>
+              <td>{student.name}</td>
+              <td>{student.batch}</td>
+              <td>{student.status || "Not Marked"}</td>
+              <td>
+                <button
+                  onClick={() =>
+                    markAttendance(student.id, "Present")
+                  }
+                >
+                  Present
+                </button>
+
+                <button
+                  onClick={() =>
+                    markAttendance(student.id, "Absent")
+                  }
+                >
+                  Absent
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+export default App;
